@@ -55,6 +55,10 @@ module.exports = function(grunt) {
 		return url.match(/^'?data.*base64/);
 	}
 
+	function isInlineSvgPath( url ){
+		return url.match(/^'?data.*svg\+xml/);
+	}
+
 	// from grunt-text-replace.js in grunt-text-replace
 	function getPathToDestination(pathToSource, pathToDestinationFile) {
 		var isDestinationDirectory = (/\/$/).test(pathToDestinationFile);
@@ -84,7 +88,7 @@ module.exports = function(grunt) {
 				}else{
 					inlineFilePath = path.resolve( path.dirname(filepath), src );
 				}
-				 
+
 				if( grunt.file.exists(inlineFilePath) ){
 					ret = grunt.file.read( inlineFilePath );
 
@@ -120,7 +124,7 @@ module.exports = function(grunt) {
 				}
 
 				inlineFilePath = inlineFilePath.replace(/\?.*$/, '');	// Remove the query string
-	
+
 				var c = options.uglify ? UglifyJS.minify(inlineFilePath).code : grunt.file.read( inlineFilePath );
 				if( grunt.file.exists(inlineFilePath) ){
 					var inlineTagAttributes = options.inlineTagAttributes.js;
@@ -194,7 +198,7 @@ module.exports = function(grunt) {
 		fileContent = fileContent.replace(/url\(["']*([^)'"]+)["']*\)/g, function(matchedWord, imgUrl){
 			var newUrl = imgUrl;
 			var flag = imgUrl.indexOf(options.tag)!=-1;	// urls like "img/bg.png?__inline" will be transformed to base64
-			if(isBase64Path(imgUrl) || isRemotePath(imgUrl)){
+			if(isBase64Path(imgUrl) || isRemotePath(imgUrl) || isInlineSvgPath(imgUrl)){
 				return matchedWord;
 			}
 			grunt.log.debug( 'imgUrl: '+imgUrl);
@@ -227,7 +231,7 @@ module.exports = function(grunt) {
 			var newUrl = imgUrl;
 			var flag = !!imgUrl.match(/\?__inline/);	// urls like "img/bg.png?__inline" will be transformed to base64
 			grunt.log.debug('flag:'+flag);
-			if(isBase64Path(imgUrl) || isRemotePath(imgUrl)){
+			if(isBase64Path(imgUrl) || isRemotePath(imgUrl) || isInlineSvgPath(imgUrl)){
 				return matchedWord;
 			}
 			grunt.log.debug( 'imgUrl: '+imgUrl);
