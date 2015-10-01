@@ -153,7 +153,7 @@ grunt.initConfig({
 });
 ```
 
-### exts
+### root
 Setting a root path lets you specify where absolute url's should resolve
 to in your project tree.
 
